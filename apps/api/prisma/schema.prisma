@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  GUEST
+  REGISTERED
+  REALTOR
+  ADMIN
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  STUDIO
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  RENTED
+  HIDDEN
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  SUSPICIOUS
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  passwordHash  String
+  role          Role            @default(GUEST)
+  phoneNumber   String?
+  isVerified    Boolean         @default(false)
+  properties    Property[]
+  payments      Payment[]
+  unlockRecords UnlockRecord[]
+  favorites     Favorite[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("users")
+}
+
+model Property {
+  id                 String             @id @default(uuid())
+  landlordId         String
+  landlord           User               @relation(fields: [landlordId], references: [id])
+  title              String
+  description        String
+  price              Decimal
+  deposit            Decimal
+  bedrooms           Int
+  bathrooms          Int
+  type               PropertyType
+  furnished          Boolean            @default(false)
+  estate             String
+  town               String
+  county             String
+  coordinates        String?
+  status             PropertyStatus     @default(AVAILABLE)
+  verificationStatus VerificationStatus @default(PENDING)
+  media              Media[]
+  amenities          PropertyAmenity[]
+  unlockRecords      UnlockRecord[]
+  favorites          Favorite[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@map("properties")
+}
+
+model Media {
+  id         String    @id @default(uuid())
+  propertyId String
+  property   Property  @relation(fields: [propertyId], references: [id])
+  url        String
+  type       MediaType @default(IMAGE)
+  isThumbnail Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@map("media")
+}
+
+model Amenity {
+  id         String            @id @default(uuid())
+  name       String            @unique
+  icon       String?
+  properties PropertyAmenity[]
+
+  @@map("amenities")
+}
+
+model PropertyAmenity {
+  propertyId String
+  amenityId  String
+  property   Property @relation(fields: [propertyId], references: [id])
+  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+
+  @@id([propertyId, amenityId])
+  @@map("property_amenities")
+}
+
+model Payment {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+  amount       Decimal
+  mpesaReceipt String?       @unique
+  phone        String
+  status       PaymentStatus @default(PENDING)
+  unlockRecord UnlockRecord?
+  createdAt    DateTime      @default(now())
+
+  @@map("payments")
+}
+
+model UnlockRecord {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  paymentId  String   @unique
+  payment    Payment  @relation(fields: [paymentId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, propertyId])
+  @@map("unlock_records")
+}
+
+model Favorite {
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@id([userId, propertyId])
+  @@map("favorites")
+}

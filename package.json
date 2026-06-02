@@ -1,0 +1,17 @@
+{
+    "name": "patanyumba-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "docker-compose up",
+        "stop": "docker-compose down",
+        "build": "docker-compose build",
+        "rebuild": "docker-compose up --build",
+        "dev:api": "cd apps/api && npm run start:dev",
+        "dev:web": "cd apps/web && npm run dev",
+        "install:all": "npm install --prefix apps/api && npm install --prefix apps/web"
+    },
+    "workspaces": [
+        "apps/*"
+    ]
+}
