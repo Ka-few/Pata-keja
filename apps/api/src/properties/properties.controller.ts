@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, UseInterceptors, UploadedFiles, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, UseInterceptors, UploadedFiles, Request } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -43,5 +43,26 @@ export class PropertiesController {
         }
 
         return property;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('REALTOR', 'ADMIN')
+    @Patch(':id')
+    async update(
+        @Param('id') id: string,
+        @Body() dto: Partial<CreatePropertyDto>,
+        @Request() req: any
+    ) {
+        return this.propertiesService.update(id, req.user.id, req.user.role, dto);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('REALTOR', 'ADMIN')
+    @Delete(':id')
+    async remove(
+        @Param('id') id: string,
+        @Request() req: any
+    ) {
+        return this.propertiesService.remove(id, req.user.id, req.user.role);
     }
 }

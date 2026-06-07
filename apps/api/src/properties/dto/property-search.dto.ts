@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsNumberString, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsNumberString, IsEnum, IsIn } from 'class-validator';
 import { PropertyType } from '@prisma/client';
+import { ALLOWED_ESTATES } from '../constants/location-constants';
 
 export class PropertySearchDto {
     @IsOptional()
@@ -9,6 +10,11 @@ export class PropertySearchDto {
     @IsOptional()
     @IsString()
     town?: string;
+
+    @IsOptional()
+    @IsString()
+    @IsIn(ALLOWED_ESTATES)
+    estate?: string;
 
     @IsOptional()
     @IsNumberString()

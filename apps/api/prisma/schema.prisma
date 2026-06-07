@@ -15,8 +15,8 @@ enum Role {
 
 enum PropertyType {
   APARTMENT
-  HOUSE
   STUDIO
+  BEDSITTER
 }
 
 enum PropertyStatus {

@@ -68,4 +68,27 @@ export class PropertiesService {
 
         return property;
     }
+
+    async update(id: string, userId: string, role: string, dto: Partial<CreatePropertyDto>) {
+        const property = await this.findOne(id);
+        if (property.landlordId !== userId && role !== 'ADMIN') {
+            throw new NotFoundException('Property not found or unauthorized');
+        }
+
+        return this.prisma.property.update({
+            where: { id },
+            data: dto,
+        });
+    }
+
+    async remove(id: string, userId: string, role: string) {
+        const property = await this.findOne(id);
+        if (property.landlordId !== userId && role !== 'ADMIN') {
+            throw new NotFoundException('Property not found or unauthorized');
+        }
+
+        return this.prisma.property.delete({
+            where: { id },
+        });
+    }
 }

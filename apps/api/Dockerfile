@@ -1,10 +1,11 @@
 # Stage 1: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
-# Copy root package files for workspace support if needed, but here we focus on api
-COPY package*.json ./
-COPY apps/api/package*.json ./apps/api/
-RUN npm install
+
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
+RUN npm ci --workspace=api --include-workspace-root=false
 
 # Copy source and config
 COPY . .
@@ -19,16 +20,20 @@ RUN cd apps/api && npm run build
 FROM node:20-alpine
 WORKDIR /app
 
-# Copy built artifacts and dependencies
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/package*.json ./
-COPY --from=builder /app/apps/api/prisma ./prisma
+COPY package.json package-lock.json ./
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/web/package.json ./apps/web/package.json
 
 # Install production dependencies
-RUN npm install --omit=dev
+RUN npm ci --omit=dev --workspace=api --include-workspace-root=false
+
+# Copy built artifacts and generate Prisma Client for the runtime image
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
+RUN npx prisma generate --schema=./apps/api/prisma/schema.prisma
 
 # Ensure the database connection URL is available (will be provided by docker-compose)
 EXPOSE 4000
 
 # Use node directly to avoid npm overhead and ensure path clarity
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "apps/api/dist/src/main.js"]

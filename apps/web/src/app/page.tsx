@@ -14,7 +14,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-blue-950 mb-2 underline decoration-amber-500 decoration-4 underline-offset-8">
               Featured Luxury Properties
             </h2>
-            <p className="text-gray-500 mt-4">Hand-picked listings for your consideration in Nairobi, Mombasa, and beyond.</p>
+            <p className="text-gray-500 mt-4">Hand-picked listings across Naka, Kiamunyi, Whitehouse, Upperhill, Bismark, and more in Nakuru.</p>
           </div>
           <button className="text-blue-900 font-bold hover:text-amber-600 transition-colors flex items-center">
             View All Listings

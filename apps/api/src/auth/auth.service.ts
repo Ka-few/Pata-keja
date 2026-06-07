@@ -27,11 +27,11 @@ export class AuthService {
                 email: dto.email,
                 passwordHash,
                 phoneNumber: dto.phoneNumber,
-                role: 'REGISTERED',
+                role: 'REALTOR', // Default to Realtor for listing privileges
             },
         });
 
-        return this.generateToken(user.id, user.email, user.role);
+        return this.generateToken(user);
     }
 
     async login(dto: LoginDto) {
@@ -49,13 +49,19 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        return this.generateToken(user.id, user.email, user.role);
+        return this.generateToken(user);
     }
 
-    private async generateToken(userId: string, email: string, role: string) {
-        const payload = { sub: userId, email, role };
+    private async generateToken(user: any) {
+        const payload = { sub: user.id, email: user.email, role: user.role };
         return {
             access_token: await this.jwtService.signAsync(payload),
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                phoneNumber: user.phoneNumber,
+            }
         };
     }
 }
