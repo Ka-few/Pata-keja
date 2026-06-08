@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { PropertiesModule } from './properties/properties.module';
 import { MediaModule } from './media/media.module';
 import { PaymentsModule } from './payments/payments.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PaymentsModule } from './payments/payments.module';
     PropertiesModule,
     MediaModule,
     PaymentsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

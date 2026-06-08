@@ -15,6 +15,7 @@ interface AuthState {
     logout: () => void;
     isAuthenticated: () => boolean;
     isRealtorOrAdmin: () => boolean;
+    isAdmin: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>()(
                 const role = get().user?.role;
                 return role === 'REALTOR' || role === 'ADMIN';
             },
+            isAdmin: () => get().user?.role === 'ADMIN',
         }),
         {
             name: 'auth-storage',

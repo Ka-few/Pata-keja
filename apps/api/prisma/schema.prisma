@@ -62,7 +62,7 @@ model User {
 model Property {
   id                 String             @id @default(uuid())
   landlordId         String
-  landlord           User               @relation(fields: [landlordId], references: [id])
+  landlord           User               @relation(fields: [landlordId], references: [id], onDelete: Cascade)
   title              String
   description        String
   price              Decimal
@@ -90,7 +90,7 @@ model Property {
 model Media {
   id         String    @id @default(uuid())
   propertyId String
-  property   Property  @relation(fields: [propertyId], references: [id])
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   url        String
   type       MediaType @default(IMAGE)
   isThumbnail Boolean   @default(false)
@@ -111,8 +111,8 @@ model Amenity {
 model PropertyAmenity {
   propertyId String
   amenityId  String
-  property   Property @relation(fields: [propertyId], references: [id])
-  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  amenity    Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
 
   @@id([propertyId, amenityId])
   @@map("property_amenities")
@@ -121,7 +121,7 @@ model PropertyAmenity {
 model Payment {
   id           String        @id @default(uuid())
   userId       String
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount       Decimal
   mpesaReceipt String?       @unique
   phone        String
@@ -135,11 +135,11 @@ model Payment {
 model UnlockRecord {
   id         String   @id @default(uuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   propertyId String
-  property   Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   paymentId  String   @unique
-  payment    Payment  @relation(fields: [paymentId], references: [id])
+  payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
   @@unique([userId, propertyId])
@@ -148,9 +148,9 @@ model UnlockRecord {
 
 model Favorite {
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   propertyId String
-  property   Property @relation(fields: [propertyId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@id([userId, propertyId])
   @@map("favorites")

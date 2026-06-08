@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { User, Menu, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { User, Menu, LogOut, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useEffect, useState } from 'react';
@@ -10,13 +10,11 @@ import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
     const router = useRouter();
-    const { user, isAuthenticated, logout, isRealtorOrAdmin } = useAuthStore();
+    const { user, isAuthenticated, logout, isRealtorOrAdmin, isAdmin } = useAuthStore();
     const [mounted, setMounted] = useState(false);
 
-    // Prevent hydration mismatch
     useEffect(() => setMounted(true), []);
-
-    if (!mounted) return null; // Or a placeholder navbar matching the design
+    if (!mounted) return null;
 
     return (
         <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -30,8 +28,16 @@ export default function Navbar() {
 
                     <div className="hidden md:flex items-center space-x-8">
                         <Link href="/properties" className="text-gray-600 hover:text-blue-900 font-medium">Browse Listings</Link>
-                        <Link href="/developments" className="text-gray-600 hover:text-blue-900 font-medium">Developments</Link>
                         <Link href="/agents" className="text-gray-600 hover:text-blue-900 font-medium">Agents</Link>
+                        {isRealtorOrAdmin() && (
+                            <Link href="/dashboard" className="text-gray-600 hover:text-blue-900 font-medium">Dashboard</Link>
+                        )}
+                        {isAdmin() && (
+                            <Link href="/admin" className="text-gray-600 hover:text-blue-900 font-medium flex items-center gap-1">
+                                <ShieldCheck className="h-4 w-4 text-red-500" />
+                                Admin
+                            </Link>
+                        )}
                     </div>
 
                     <div className="flex items-center space-x-4">
@@ -49,18 +55,32 @@ export default function Navbar() {
                             >
                                 <User className="h-5 w-5" />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent align="end" className="w-52">
                                 {isAuthenticated() ? (
                                     <>
                                         <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-1">
                                             {user?.role === 'REALTOR' ? 'Agent' : user?.role === 'ADMIN' ? 'Admin' : 'Account'}
                                         </div>
-                                        <DropdownMenuItem className="text-gray-700 font-medium">{user?.email}</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-gray-700 font-medium text-xs truncate">{user?.email}</DropdownMenuItem>
+                                        <DropdownMenuSeparator />
                                         {isRealtorOrAdmin() && (
-                                            <DropdownMenuItem onClick={() => router.push('/list-property')} className="w-full cursor-pointer">List Property</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => router.push('/dashboard')} className="cursor-pointer gap-2">
+                                                <LayoutDashboard className="h-4 w-4" /> Dashboard
+                                            </DropdownMenuItem>
                                         )}
-                                        <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer">
-                                            <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                                        {isRealtorOrAdmin() && (
+                                            <DropdownMenuItem onClick={() => router.push('/list-property')} className="cursor-pointer">
+                                                List Property
+                                            </DropdownMenuItem>
+                                        )}
+                                        {isAdmin() && (
+                                            <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer gap-2 text-red-600 focus:text-red-600 focus:bg-red-50">
+                                                <ShieldCheck className="h-4 w-4" /> Admin Panel
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer gap-2">
+                                            <LogOut className="h-4 w-4" /> Sign Out
                                         </DropdownMenuItem>
                                     </>
                                 ) : (
@@ -68,8 +88,8 @@ export default function Navbar() {
                                         <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 mb-1">
                                             Agent Access
                                         </div>
-                                        <DropdownMenuItem onClick={() => router.push('/login')} className="w-full cursor-pointer">Sign In</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => router.push('/register')} className="w-full cursor-pointer">Register</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => router.push('/login')} className="cursor-pointer">Sign In</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => router.push('/register')} className="cursor-pointer">Register</DropdownMenuItem>
                                     </>
                                 )}
                             </DropdownMenuContent>

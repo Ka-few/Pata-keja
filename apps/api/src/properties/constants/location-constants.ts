@@ -1,15 +1,18 @@
 export const ALLOWED_TOWNS = ['Nakuru'];
 
+export const ALLOWED_COUNTIES = ['Nakuru'];
+
 export const ALLOWED_ESTATES = [
-  'Naka',
-  'Kiamunyi',
-  'Whitehouse',
-  'Upperhill',
-  'Bismark',
-  'KITI',
-  'Heshima',
-  'Sita',
-  'Lanet',
-  'Pipeline',
   'Barnabas',
+  'Bismark',
+  'Heshima',
+  'KITI',
+  'Kiamunyi',
+  'Lanet',
+  'Mawanga',
+  'Naka',
+  'Pipeline',
+  'Sita',
+  'Upperhill',
+  'Whitehouse',
 ];
